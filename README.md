@@ -47,6 +47,6 @@ Nếu không mở được link, hãy dừng và yêu cầu tôi đính kèm aut
 - Không chứa mã nguồn website, database ID, token hay cấu hình bí mật.
 - File do AI tạo luôn được xem là dữ liệu chưa tin cậy.
 - Luôn kiểm tra preview trên TAP Education trước khi xác nhận import.
-- Nội dung import mặc định nên ở trạng thái nháp cho đến khi giáo viên duyệt.
+- File do AI tạo giữ trạng thái nháp trong bước kiểm tra/xem trước. Sau khi quản trị viên xác nhận import, TAP Education mặc định kích hoạt nội dung; có thể tắt tùy chọn kích hoạt để tiếp tục giữ bản nháp.
 
 > Các file mẫu trên website TAP Education vẫn được giữ làm phương án dự phòng độc lập với GitHub.
