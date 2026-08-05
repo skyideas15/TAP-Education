@@ -1,0 +1,1239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TAP Quiz AI Package Manifest",
+  "description": "Schema for manifest.json at the root of a tapquiz.package/1.0 archive. Package keys are portable mapping hints only; Tapedu database IDs and media UUIDs are intentionally not part of this schema.",
+  "$comment": "Every object in this schema is closed with additionalProperties=false so internal fields such as user_id, quiz_id, question_book_unit_id, media_uuid, material_ref, vocab IDs, and SRS IDs are rejected wherever they appear.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "revision",
+    "title",
+    "locale",
+    "defaults",
+    "structure",
+    "assets",
+    "stimuli",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "tapquiz.package/1.0",
+      "description": "Exact manifest contract version."
+    },
+    "package_id": {
+      "$ref": "#/$defs/portableKey",
+      "description": "Stable package-scoped key used with revision/checksum for idempotency; never a Tapedu database ID."
+    },
+    "revision": {
+      "$ref": "#/$defs/positiveInteger"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "\\S"
+    },
+    "locale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "pattern": "\\S"
+    },
+    "defaults": {
+      "$ref": "#/$defs/defaultMetadata"
+    },
+    "structure": {
+      "$ref": "#/$defs/structure"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "license": {
+      "$ref": "#/$defs/licenseDeclaration"
+    },
+    "assets": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "stimuli": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stimulus"
+      }
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    }
+  },
+  "$defs": {
+    "portableKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 190,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,189}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "nonBlank100": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "\\S"
+    },
+    "metadataProperties": {
+      "$comment": "Documentation-only list of metadata names. Metadata-bearing object schemas repeat these closed properties so additionalProperties can reject internal IDs."
+    },
+    "defaultMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "const": "draft"
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ]
+        },
+        "skill": {
+          "enum": [
+            "grammar",
+            "vocabulary",
+            "reading",
+            "listening"
+          ]
+        },
+        "subskill": {
+          "enum": [
+            "present_simple",
+            "past_simple",
+            "present_perfect",
+            "future_forms",
+            "conditionals",
+            "modal_verbs",
+            "phrasal_verbs",
+            "articles",
+            "comparatives_superlatives"
+          ]
+        },
+        "level": {
+          "enum": [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "C1",
+            "C2"
+          ]
+        },
+        "theme": {
+          "enum": [
+            "daily_life",
+            "school",
+            "work",
+            "travel",
+            "family",
+            "technology",
+            "health",
+            "food"
+          ]
+        },
+        "format": {
+          "enum": [
+            "gap_fill",
+            "short_answer",
+            "mcq_4",
+            "error_correction",
+            "sentence_transformation"
+          ]
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150,
+          "pattern": "\\S"
+        },
+        "tags": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        }
+      }
+    },
+    "structure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "library_sections",
+        "exam_sections"
+      ],
+      "properties": {
+        "library_sections": {
+          "type": "array",
+          "description": "Portable suggestions that the import wizard maps to real Book > Unit destinations.",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/section"
+          }
+        },
+        "exam_sections": {
+          "type": "array",
+          "description": "Portable suggestions that the import wizard maps to real Exam category > Quiz destinations.",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/section"
+          }
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "title"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/portableKey"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        },
+        "position": {
+          "$ref": "#/$defs/positiveInteger"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "generated_by": {
+          "$ref": "#/$defs/nonBlank100"
+        },
+        "provider": {
+          "$ref": "#/$defs/nonBlank100"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "text_model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "image_model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "audio_model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "video_model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "prompt_hash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "seed": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "moderation_status": {
+          "enum": [
+            "not_reviewed",
+            "reviewed",
+            "approved",
+            "rejected"
+          ]
+        }
+      }
+    },
+    "licenseDeclaration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "\\S"
+            },
+            "spdx_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9.+-]*$"
+            },
+            "usage_rights": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            },
+            "attribution": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            },
+            "source_reference": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2000
+            },
+            "notes": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000,
+              "pattern": "\\S"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "name"
+              ]
+            },
+            {
+              "required": [
+                "spdx_id"
+              ]
+            },
+            {
+              "required": [
+                "usage_rights"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "imagePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^assets/images/(?!\\.{1,2}(?:/|$))[^/\\\\]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\]+)*$",
+      "not": {
+        "pattern": "\\u0000"
+      }
+    },
+    "audioPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^assets/audio/(?!\\.{1,2}(?:/|$))[^/\\\\]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\]+)*$",
+      "not": {
+        "pattern": "\\u0000"
+      }
+    },
+    "videoPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^assets/video/(?!\\.{1,2}(?:/|$))[^/\\\\]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\]+)*$",
+      "not": {
+        "pattern": "\\u0000"
+      }
+    },
+    "captionPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^captions/(?!\\.{1,2}(?:/|$))[^/\\\\]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\]+)*$",
+      "not": {
+        "pattern": "\\u0000"
+      }
+    },
+    "transcriptPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^transcripts/(?!\\.{1,2}(?:/|$))[^/\\\\]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\]+)*$",
+      "not": {
+        "pattern": "\\u0000"
+      }
+    },
+    "inlineSidecarText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000000,
+      "pattern": "\\S"
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "path",
+        "mime",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/portableKey"
+        },
+        "kind": {
+          "enum": [
+            "image",
+            "thumbnail",
+            "audio",
+            "video",
+            "caption",
+            "transcript"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "mime": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000000
+        },
+        "alt_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "\\S"
+        },
+        "caption": {
+          "$ref": "#/$defs/inlineSidecarText"
+        },
+        "caption_path": {
+          "$ref": "#/$defs/captionPath"
+        },
+        "transcript": {
+          "$ref": "#/$defs/inlineSidecarText"
+        },
+        "transcript_path": {
+          "$ref": "#/$defs/transcriptPath"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "\\S"
+        },
+        "duration_ms": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "license": {
+          "$ref": "#/$defs/licenseDeclaration"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      },
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "caption",
+              "caption_path"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "transcript",
+              "transcript_path"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "image"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "alt_text"
+            ],
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/imagePath"
+              },
+              "mime": {
+                "enum": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/webp",
+                  "image/gif"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "thumbnail"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "alt_text"
+            ],
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/imagePath"
+              },
+              "mime": {
+                "enum": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/webp"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "audio"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "oneOf": [
+              {
+                "required": [
+                  "transcript"
+                ]
+              },
+              {
+                "required": [
+                  "transcript_path"
+                ]
+              }
+            ],
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/audioPath"
+              },
+              "mime": {
+                "enum": [
+                  "audio/mpeg",
+                  "audio/wav",
+                  "audio/x-wav",
+                  "audio/ogg",
+                  "audio/mp4",
+                  "audio/aac",
+                  "audio/webm"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "video"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "oneOf": [
+              {
+                "required": [
+                  "caption"
+                ]
+              },
+              {
+                "required": [
+                  "caption_path"
+                ]
+              }
+            ],
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/videoPath"
+              },
+              "mime": {
+                "enum": [
+                  "video/mp4",
+                  "video/webm"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "caption"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/captionPath"
+              },
+              "mime": {
+                "enum": [
+                  "text/vtt",
+                  "text/plain"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "transcript"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/transcriptPath"
+              },
+              "mime": {
+                "const": "text/plain"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "assetIdList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/portableKey"
+      }
+    },
+    "assetBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/portableKey",
+          "description": "Must match an id declared in the top-level assets array."
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9_-]{0,31}$",
+          "default": "primary"
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9._:-]+$",
+          "default": "content",
+          "examples": [
+            "stimulus",
+            "question_prompt",
+            "option:A",
+            "explanation"
+          ]
+        },
+        "sort_order": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/positiveInteger"
+            }
+          ],
+          "default": 1
+        },
+        "reveal_policy": {
+          "enum": [
+            "during_attempt",
+            "after_submit",
+            "teacher_only"
+          ],
+          "default": "during_attempt",
+          "description": "Controls when potentially answer-revealing media, captions, or transcripts become visible."
+        }
+      }
+    },
+    "examSectionKeys": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/portableKey"
+      },
+      "description": "Each value must match structure.exam_sections[].key."
+    },
+    "stimulus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/portableKey"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "passage_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200000,
+          "pattern": "\\S"
+        },
+        "library_section_key": {
+          "$ref": "#/$defs/portableKey",
+          "description": "Must match structure.library_sections[].key and maps portably to a Unit."
+        },
+        "exam_section_keys": {
+          "$ref": "#/$defs/examSectionKeys"
+        },
+        "asset_ids": {
+          "$ref": "#/$defs/assetIdList",
+          "description": "Shorthand bindings with role=primary, target=stimulus, and reveal_policy=during_attempt."
+        },
+        "asset_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetBinding"
+          }
+        },
+        "status": {
+          "const": "draft"
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ]
+        },
+        "skill": {
+          "enum": [
+            "grammar",
+            "vocabulary",
+            "reading",
+            "listening"
+          ]
+        },
+        "subskill": {
+          "enum": [
+            "present_simple",
+            "past_simple",
+            "present_perfect",
+            "future_forms",
+            "conditionals",
+            "modal_verbs",
+            "phrasal_verbs",
+            "articles",
+            "comparatives_superlatives"
+          ]
+        },
+        "level": {
+          "enum": [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "C1",
+            "C2"
+          ]
+        },
+        "theme": {
+          "enum": [
+            "daily_life",
+            "school",
+            "work",
+            "travel",
+            "family",
+            "technology",
+            "health",
+            "food"
+          ]
+        },
+        "format": {
+          "enum": [
+            "gap_fill",
+            "short_answer",
+            "mcq_4",
+            "error_correction",
+            "sentence_transformation"
+          ]
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150,
+          "pattern": "\\S"
+        },
+        "tags": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "text"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[A-F]$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200000,
+          "pattern": "\\S"
+        }
+      }
+    },
+    "fillBlankSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accepted"
+      ],
+      "properties": {
+        "accepted": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200000,
+            "pattern": "\\S"
+          }
+        },
+        "case_sensitive": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "type",
+        "prompt"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/portableKey"
+        },
+        "stimulus_key": {
+          "$ref": "#/$defs/portableKey",
+          "description": "Must match stimuli[].key. A grouped question inherits all Unit/exam placements from that stimulus."
+        },
+        "position": {
+          "$ref": "#/$defs/positiveInteger",
+          "description": "Required and unique within a stimulus for grouped questions."
+        },
+        "library_section_key": {
+          "$ref": "#/$defs/portableKey",
+          "description": "Direct Unit placement for a standalone question; grouped questions must not override it."
+        },
+        "exam_section_keys": {
+          "$ref": "#/$defs/examSectionKeys",
+          "description": "Direct exam placements for a standalone question; grouped questions must not override them."
+        },
+        "type": {
+          "enum": [
+            "mcq",
+            "fill_blanks",
+            "true_false"
+          ]
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200000,
+          "pattern": "\\S"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/option"
+          }
+        },
+        "correct_option_keys": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-F]$"
+          },
+          "description": "The single value must match one of this question's options[].key."
+        },
+        "slots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 25,
+          "items": {
+            "$ref": "#/$defs/fillBlankSlot"
+          },
+          "description": "Slot order is 1-based and must exactly match contiguous [[blank:N]] markers in prompt."
+        },
+        "correct": {
+          "type": "boolean"
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200000,
+          "pattern": "\\S"
+        },
+        "mark": {
+          "$ref": "#/$defs/positiveInteger",
+          "default": 1
+        },
+        "asset_ids": {
+          "$ref": "#/$defs/assetIdList",
+          "description": "Shorthand bindings with role=primary, target=question_prompt, and reveal_policy=during_attempt."
+        },
+        "asset_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetBinding"
+          }
+        },
+        "status": {
+          "const": "draft"
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ]
+        },
+        "skill": {
+          "enum": [
+            "grammar",
+            "vocabulary",
+            "reading",
+            "listening"
+          ]
+        },
+        "subskill": {
+          "enum": [
+            "present_simple",
+            "past_simple",
+            "present_perfect",
+            "future_forms",
+            "conditionals",
+            "modal_verbs",
+            "phrasal_verbs",
+            "articles",
+            "comparatives_superlatives"
+          ]
+        },
+        "level": {
+          "enum": [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "C1",
+            "C2"
+          ]
+        },
+        "theme": {
+          "enum": [
+            "daily_life",
+            "school",
+            "work",
+            "travel",
+            "family",
+            "technology",
+            "health",
+            "food"
+          ]
+        },
+        "format": {
+          "enum": [
+            "gap_fill",
+            "short_answer",
+            "mcq_4",
+            "error_correction",
+            "sentence_transformation"
+          ]
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150,
+          "pattern": "\\S"
+        },
+        "tags": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "stimulus_key"
+            ]
+          },
+          "then": {
+            "required": [
+              "position"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "library_section_key"
+                  ]
+                },
+                {
+                  "required": [
+                    "exam_section_keys"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "type": {
+                  "const": "mcq"
+                }
+              },
+              "required": [
+                "type",
+                "options",
+                "correct_option_keys"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "slots"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "correct"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "fill_blanks"
+                },
+                "prompt": {
+                  "pattern": "\\[\\[blank:[1-9][0-9]*\\]\\]"
+                }
+              },
+              "required": [
+                "type",
+                "slots"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "options"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "correct_option_keys"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "correct"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "properties": {
+                "type": {
+                  "const": "true_false"
+                }
+              },
+              "required": [
+                "type",
+                "correct"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "options"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "correct_option_keys"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "slots"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
